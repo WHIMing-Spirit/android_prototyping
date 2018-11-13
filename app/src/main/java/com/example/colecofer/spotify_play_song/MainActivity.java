@@ -14,6 +14,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        testSpotifyAPI();
+    }
+
+
+    public void testSpotifyAPI() {
         SpotifyRequest request = new SpotifyRequest();
 
         //Passes in the implementation of the callback function that is defined in the SpotifyRequestCallBack interface
@@ -31,5 +36,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        request.playPauseSong("play");
+//        request.playPauseSong("pause");
+
     }
+
+
 }

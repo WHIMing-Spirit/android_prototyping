@@ -13,9 +13,11 @@ public class SpotifyRequest {
     private final String BASE_URL = "https://api.spotify.com/v1";
     private final String FEATURES_URL = "/audio-features/";
     private final String SEARCH_URL = "/search/";
+    private final String PLAYER_URL = "/me/player/";
 
     //Auth token TODO: Make this dynamic rather than hard-coded
-    private final String BEARER_TOKEN = "BQDjt2a-H7AjET-yHYn_38GuiX1o0ah19STsauEE0EV8I5tYrrKi2K4gvsV-riOygDOXqcBFWl2I_n4kCppN70mK1ms2J1s07zzkr3-oISNWntLoF8IaztdKXbNgO28A75XtOUpiYnpKLr5xug";
+    //Note that the bearer token must have the user-read-playback-state scope checked for play/pause functionality to work
+    private final String BEARER_TOKEN = "BQCjdWto5tdzP8uX-tNgaPG6QSPS6IHMe2u9Zx8n2t0oHKJPprZCrtUSq7WproyaqgfludkRoW_WuNsg7GrnqinZFzr098vbhf1oK8D_vFRkjNfL-L5BwwmCTRpmnZPWF7YBP3Gh0-0JDeVXqld3Dc1Gr7g";
 
     /**
      * Calls the Spotify features API end-point for the passed in trackID.
@@ -102,6 +104,30 @@ public class SpotifyRequest {
             public void onRetry(int retryNo) {
                 Log.d("HTTP", "Request is retrying...");
             }
+        });
+    }
+
+    /**
+     * Plays or pauses the track currently playing on the users active spotify player.
+     * @param action a string containing either "play" or "pause"
+     */
+    public void playPauseSong(final String action) {
+        String fullURL = BASE_URL + PLAYER_URL+ action;
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader("Authorization", "Bearer " + BEARER_TOKEN);
+
+        client.put(fullURL, new TextHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Log.d("HTTP", action + " was successful! Status Code: " + statusCode);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.d("HTTP", "Error, could not play/pause track: " + responseString);
+            }
+
         });
     }
 
