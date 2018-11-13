@@ -12,7 +12,7 @@ public class SpotifyRequest {
     private final String SEARCH_URL = "/search/";
 
     //Auth token TODO: Make this dynamic rather than hard-coded
-    private final String BEARER_TOKEN = "BQDbBoYzQpin4HNysrzhiqsffEdpd9QBSFwHXHhMaZSvu6YvFz4CLFny0B8ZkyznFay5EoL3spP9pus9JgVmK5ySdxyWRQbDTB8JAkkjX6k6m4KcpafGNOy_F979nqvyurC35mzD5D9n9VBMtg";
+    private final String BEARER_TOKEN = "BQDjt2a-H7AjET-yHYn_38GuiX1o0ah19STsauEE0EV8I5tYrrKi2K4gvsV-riOygDOXqcBFWl2I_n4kCppN70mK1ms2J1s07zzkr3-oISNWntLoF8IaztdKXbNgO28A75XtOUpiYnpKLr5xug";
 
     /**
      * Calls the Spotify features API end-point for the passed in trackID.
@@ -22,6 +22,7 @@ public class SpotifyRequest {
      */
     public void getFeaturesFromTrackID(String trackID, final SpotifyRequestCallBack callback) {
         String fullFeaturesURL = BASE_URL + FEATURES_URL + trackID;
+
         AsyncHttpClient client = new AsyncHttpClient();
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-Type", "application/json");
@@ -63,20 +64,22 @@ public class SpotifyRequest {
      * @param callback function that gets invoked after success or failure
      */
     public void searchForTrack(String trackName, final SpotifyRequestCallBack callback) {
-        String fullSearchURL = BASE_URL + FEATURES_URL;
+        String fullSearchURL = BASE_URL + SEARCH_URL;
+
         AsyncHttpClient client = new AsyncHttpClient();
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-Type", "application/json");
         client.addHeader("Authorization", "Bearer " + BEARER_TOKEN);
 
-        //TODO: Use trackName but format it first
-        client.addHeader("q", trackName);
-        client.addHeader("type", "artist");
+        RequestParams params = new RequestParams();
+        params.put("q", trackName);
+        params.put("type", "artist");
 
-        client.get(fullSearchURL, new TextHttpResponseHandler() {
+        client.get(fullSearchURL, params, new TextHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Log.d("HTTP", "Status Code: " + statusCode);
                 callback.spotifyResponse(true, responseString);
             }
 

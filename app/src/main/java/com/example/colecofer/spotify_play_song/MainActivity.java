@@ -20,19 +20,16 @@ public class MainActivity extends AppCompatActivity {
         request.getFeaturesFromTrackID(pukeChamberID, new SpotifyRequestCallBack() {
             @Override
             public void spotifyResponse(boolean success, String response){
-                Log.d("\nHTTP", " ** FEATURE **\n");
                 Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
             }
         });
 
-
-//        request.searchForTrack("The%20Faceless", new SpotifyRequestCallBack() {
-//            @Override
-//            public void spotifyResponse(boolean success, String response) {
-//                Log.d("\nHTTP", " ** SEARCH **\n");
-//                Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
-//            }
-//        });
+        request.searchForTrack("The Faceless", new SpotifyRequestCallBack() {
+            @Override
+            public void spotifyResponse(boolean success, String response) {
+                Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
+            }
+        });
 
     }
 }
