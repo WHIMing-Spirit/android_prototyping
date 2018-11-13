@@ -4,6 +4,9 @@ import cz.msebera.android.httpclient.Header;
 import android.util.Log;
 import com.loopj.android.http.*;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class SpotifyRequest {
 
     //URLs
@@ -60,10 +63,11 @@ public class SpotifyRequest {
      * Calls the Spotify search API end-point and returns the JSON response of search
      * queries through the callback function.
      * TODO: Remove hard coded auth token
-     * @param trackName Name of the song
+     * @param query Name of the song
+     * @param searchType A list of types to search for (e.g. "album, artist, playlist, track")
      * @param callback function that gets invoked after success or failure
      */
-    public void searchForTrack(String trackName, final SpotifyRequestCallBack callback) {
+    public void searchSpotify(String query, String searchType, final SpotifyRequestCallBack callback) {
         String fullSearchURL = BASE_URL + SEARCH_URL;
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -72,8 +76,8 @@ public class SpotifyRequest {
         client.addHeader("Authorization", "Bearer " + BEARER_TOKEN);
 
         RequestParams params = new RequestParams();
-        params.put("q", trackName);
-        params.put("type", "artist");
+        params.put("q", query);
+        params.put("type", searchType);
 
         client.get(fullSearchURL, params, new TextHttpResponseHandler() {
 
@@ -99,8 +103,22 @@ public class SpotifyRequest {
                 Log.d("HTTP", "Request is retrying...");
             }
         });
-
     }
 
+
+    /**
+     * Converts a String in JSON format to a JSONObject
+     * @param jsonStr The string in JSON format
+     * @return The JSONObject, or null if there was an error
+     */
+    public JSONObject convertStringToJSON(String jsonStr) {
+        try {
+            JSONObject jsonObj = new JSONObject(jsonStr);
+            return jsonObj;
+        } catch (JSONException e) {
+            Log.d("HTTP", "Could not convert to JSONObject" + e.getMessage());
+            return null;
+        }
+    }
 
 }

@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         SpotifyRequest request = new SpotifyRequest();
 
-        //Passes in the implementation of the callback function in the interface SpotifyRequestCallBack
+        //Passes in the implementation of the callback function that is defined in the SpotifyRequestCallBack interface
         request.getFeaturesFromTrackID(pukeChamberID, new SpotifyRequestCallBack() {
             @Override
             public void spotifyResponse(boolean success, String response){
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        request.searchForTrack("The Faceless", new SpotifyRequestCallBack() {
+        request.searchSpotify("Slow Torture Puke Chamber","track", new SpotifyRequestCallBack() {
             @Override
             public void spotifyResponse(boolean success, String response) {
                 Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
