@@ -1,9 +1,15 @@
 
 package com.example.colecofer.spotify_play_song;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initUI();
         testSpotifyAPI();
     }
 
@@ -36,10 +43,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        request.playPauseSong("play");
-//        request.playPauseSong("pause");
+        //request.playPauseSong("play");
+        //request.playPauseSong("pause");
 
     }
+
+
+    public void initUI() {
+        final SpotifyRequest request = new SpotifyRequest();
+
+        //Setup play button listeners
+        Button playButton = (Button) findViewById(R.id.playButton);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                request.playPauseSong("play");
+            }
+        });
+
+        //Setup pause button listeners
+        Button pauseButton = (Button) findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                SpotifyRequest request = new SpotifyRequest();
+                request.playPauseSong("pause");
+            }
+        });
+    }
+
+
 
 
 }

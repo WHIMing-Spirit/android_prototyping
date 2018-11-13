@@ -17,7 +17,7 @@ public class SpotifyRequest {
 
     //Auth token TODO: Make this dynamic rather than hard-coded
     //Note that the bearer token must have the user-read-playback-state scope checked for play/pause functionality to work
-    private final String BEARER_TOKEN = "BQCjdWto5tdzP8uX-tNgaPG6QSPS6IHMe2u9Zx8n2t0oHKJPprZCrtUSq7WproyaqgfludkRoW_WuNsg7GrnqinZFzr098vbhf1oK8D_vFRkjNfL-L5BwwmCTRpmnZPWF7YBP3Gh0-0JDeVXqld3Dc1Gr7g";
+    private final String BEARER_TOKEN = "BQAYMK2-61MHCJH-zPpTve6Xqta3NdvPYRlv86tUgtdIA19f6kGvDKBj8heb-D6x6n8YiszHLYQhTrpdL0BWg742Z4mlJMi_suW6Ww0O6W9hpWK1u86q84QxnGbaLNQhJIrQ5zqJtW0fHhesk9zXHTlF-2o";
 
     /**
      * Calls the Spotify features API end-point for the passed in trackID.
