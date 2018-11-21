@@ -17,23 +17,29 @@ public class SpotifyRequest {
     private final String AUTH_URL = "https://accounts.spotify.com/api/token";
 
     //WHIM Credentials
-    private final String CLIENT_ID = "e55495216aef49088a8b9dbad6cdeba4";
-    private final String CLIENT_SECRET = "b3461bbeedd34cbb9fed2be80c846fab";
+    //    private final String CLIENT_ID = "e55495216aef49088a8b9dbad6cdeba4";
+    //    private final String CLIENT_SECRET = "b3461bbeedd34cbb9fed2be80c846fab";
 
+    //Personal Dev Credentials
+    private final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8";
+    private final String CLIENT_SECRET = "4f0d128f8f1b4776a530292cdef1dd45";
+
+    //Temporary Token until scopes are added to authorization
+    private final String TOKEN = "BQCKHspteexTfDBfClUd_3CJp7m3Y6guYG-_Zu_2v03HGfVAmFs-HQQ240adrk2WImPZWoxTSO35EyxfXTgqw55Yls5G1JyOhfK7kCRLb3j1WXcYP3_iZ-bdHcyjk9jd2iIg7pbYZm3rUBckigsTwMzHWZy2OYhv";
 
     /**
      * Gets the authorization token given the clientid and clientsecret
      * @param scopes
      * @param callback
      */
-    public void getAuthToken(String [] scopes, final SpotifyRequestCallBack callback) {
+    public void getAuthToken(String scopes, final SpotifyRequestCallBack callback) {
         AsyncHttpClient client = new AsyncHttpClient();
 
         RequestParams body = new RequestParams();
         body.put("client_id", CLIENT_ID);
         body.put("client_secret", CLIENT_SECRET);
         body.put("grant_type", "client_credentials");
-        body.put("scope", "user-read-playback-state");
+        body.put("scope", scopes);
 
         client.post(AUTH_URL, body, new TextHttpResponseHandler() {
 
@@ -145,7 +151,8 @@ public class SpotifyRequest {
     public void playPauseSong(final String action, String authToken) {
         String fullURL = BASE_URL + PLAYER_URL+ action;
         AsyncHttpClient client = new AsyncHttpClient();
-        client.addHeader("Authorization", "Bearer " + authToken);
+//        client.addHeader("Authorization", "Bearer " + authToken);
+        client.addHeader("Authorization", "Bearer " + TOKEN);
 
         client.put(fullURL, new TextHttpResponseHandler() {
 

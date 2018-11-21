@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void testSpotifyAPI() {
         final SpotifyRequest request = new SpotifyRequest();
-        String[] authScopes = {"user-read-playback-state", "user-modify-playback-state"};
+        String authScopes = "user-read-playback-state user-modify-playback-state";
 
         //Get the auth token given the scope
         request.getAuthToken(authScopes, new SpotifyRequestCallBack() {
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Setup trackID textview
-        TextView searchSpotifyTextField = findViewById(R.id.querySpotifyTextField);
+        final TextView searchSpotifyTextField = findViewById(R.id.querySpotifyTextField);
         searchSpotifyTextField.setHint("Enter Track ID");
 
         //Setup start song button listener
@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         startSongButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String trackIdInput = searchSpotifyTextField.getText().toString();
+                Log.d("HTTP","Track Id from input: " + trackIdInput);
                 //TODO: Call the API to start a song via ID
             }
         });
