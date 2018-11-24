@@ -23,6 +23,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         testSpotifyAPI();
+        testGeniusAPI();
+    }
+
+
+    public void testGeniusAPI() {
+        final GeniusRequest geniusRequest = new GeniusRequest();
+        geniusRequest.searchForSong("Hypnotize");
     }
 
 
@@ -44,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 request.getFeaturesFromTrackID(pukeChamberID, authToken, new SpotifyRequestCallBack() {
                     @Override
                     public void spotifyResponse(boolean success, String response){
-                        Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
+                        //Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
                     }
                 });
 
@@ -52,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 request.searchSpotify("Slow Torture Puke Chamber","track", authToken, new SpotifyRequestCallBack() {
                     @Override
                     public void spotifyResponse(boolean success, String response) {
-                        Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
+                        //Log.d("HTTP", "Success: " + success + "\nResponse: " + response);
                     }
                 });
 
