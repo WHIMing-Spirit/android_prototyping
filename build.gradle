@@ -20,7 +20,7 @@ allprojects {
         google()
         jcenter()
 
-        //*  This must go here to include external libraries *//
+        //*  This must go here to include external libraries in the libs folder *//
         flatDir {
             dirs 'libs'
         }

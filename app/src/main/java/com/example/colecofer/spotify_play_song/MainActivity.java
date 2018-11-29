@@ -23,11 +23,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        LocalSpotifyPlayer spotifyPlayer = new LocalSpotifyPlayer();
-        spotifyPlayer.onCreate();
+//        LocalSpotifyPlayer spotifyPlayer = new LocalSpotifyPlayer();
+//        spotifyPlayer.onCreate();
 
 
 //        testSpotifyAPI();
+        testMusixmatch();
+    }
+
+    public void testMusixmatch() {
+        final MusixmatchRequest request = new MusixmatchRequest();
+        request.getLyrics(new MusixmatchRequestCallBack() {
+
+            @Override
+            public void MusixmatchResponse(boolean success, String response) {
+                try {
+                    String json = SpotifyRequest.convertStringToJSON(response).getJSONObject("message").getJSONObject("body").getJSONObject("lyrics").getString("lyrics_body");
+                    Log.d("Musixmatch", "After conversion: " + json);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

@@ -31,4 +31,10 @@ dependencies {
     //Spotify Dependencies
     implementation project(':spotify-app-remote')
     implementation 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
+    implementation 'com.spotify.sdk:spotify-auth-release-1.1.0@aar'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    //    implementation 'com.spotify.android:auth:1.0.0-alpha'  //Auth without the .aar file
+
+
 }
