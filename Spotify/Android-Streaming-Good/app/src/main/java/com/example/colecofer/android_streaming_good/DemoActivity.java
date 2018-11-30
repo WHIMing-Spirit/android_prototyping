@@ -1,5 +1,6 @@
 package com.example.colecofer.android_streaming_good;
 
+import android.media.VolumeShaper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,6 +12,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
@@ -30,38 +34,43 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class DemoActivity extends AppCompatActivity implements Player.NotificationCallback, ConnectionStateCallback {
 
+    //** Temp **//
+//    private static final String AUTH = "Bearer BQA-AzWRkAGpzx2YvvxG0YD1_r-S7lZDx7vfXANqw90LCSo_4ETStmuCouLcueIUQiC75dWuKspsuj8zYFpedB4behZVCvZ90e8WoOLYU5oNLtdWEd-pwTNcWdxs9MabAlkPY9sVW94hRfWk2XmgNGgWoXR7OCa8a2QsqH9MDkMnZWJvUP4saI-mNBinBj_-DPLPNPmNQ1GF1X-EW0tWIqfPJafxIml3ifhTKsCjDLxyaPMVpDDlb65-YUHesj3KhblQb8I_2_yZSVCPjvw";
+
+
     //Client Constants
-    private static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54"; //TODO change this to our client_id
-    private static final String REDIRECT_URI = "testschema://callback";         //TODO also change this
+    private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8"; //TODO change this to our client_id
+//    private static final String REDIRECT_URI = "testschema://callback";         //TODO also change this
+    private static final String REDIRECT_URI = "WHIM-Visualizer-app-login://callback ";
     private static final String[] SCOPES = new String[] {"user-read-private", "playlist-read", "playlist-read-private", "streaming"};
 
     //Test Constants
     private static final String TEST_SONG_URI = "spotify:track:6KywfgRqvgvfJc3JRwaZdZ";
+    private static final String HYP_TRACK_URI = "spotify:track:7KwZNVEaqikRSBSpyhXK2j";
     private static final String TEST_ALBUM_URI = "spotify:album:2lYmxilk8cXJlxxXmns1IU";
     private static final String TEST_PLAYLIST_URI = "spotify:user:spotify:playlist:2yLXxKhhziG2xzy7eyD4TD";
     private static final String TEST_QUEUE_SONG_URI = "spotify:track:5EEOjaJyWvfMglmEwf9bG3";
 
     private static final int REQUEST_CODE = 1337;              //I have no idea what this is
-    public static final String TAG = "Spotify-Streaming-SDK";  //Logging tag
+    public static final String TAG = "Spotify";  //Logging tag
 
-    private SpotifyPlayer player;                             //MUST be destroyed by calling SpotifyDestroyPlayer(Object) to avoid mem leaks
+    private SpotifyPlayer player;                              //MUST be destroyed by calling SpotifyDestroyPlayer(Object) to avoid mem leaks
     private PlaybackState currentPlaybackState;
-    private BroadcastReceiver networkStateReceiver;           //Used to get notifications from the system about the network state (need to set ACCESS_NETWORK_STATE permission
+    private BroadcastReceiver networkStateReceiver;            //Used to get notifications from the system about the network state (need to set ACCESS_NETWORK_STATE permission
 
-    private Metadata mMetadata;                               //Holds Spotify metadata about tracks and stuff
+    private Metadata metadata;                                //Holds Spotify metadata about tracks and stuff
 
     private final Player.OperationCallback OperationCallback = new Player.OperationCallback() {
         @Override
         public void onSuccess() {
-            log("OK!");
+            log("Callback: OK!");
         }
 
         @Override
         public void onError(Error error) {
-            log("ERROR:" + error);
+            log("Callback: ERROR:" + error);
         }
     };
-
 
 
     @Override
@@ -69,13 +78,13 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
 
-        loginToSpotify();
 
+        loginToSpotify();
     }
 
 
-
     public void loginToSpotify() {
+        initUI();
         openLoginWindow();
     }
 
@@ -83,10 +92,34 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     public void updateView() {
         boolean loggedIn = isLoggedIn();
 
+        if (metadata != null) {
+            findViewById(R.id.pauseButton).setEnabled(metadata.currentTrack != null);
+
+        }
+
     }
 
-    public boolean isLoggedIn() { return player != null && player.isLoggedIn(); }
 
+    public boolean isLoggedIn() {
+        return player != null && player.isLoggedIn();
+    }
+
+
+    public void initUI() {
+        //Get references to UI elements
+        Button playButton = findViewById(R.id.playButton);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                log("Starting plaback for " + HYP_TRACK_URI);
+                player.playUri(OperationCallback, HYP_TRACK_URI, 0, 0);
+            }
+        });
+
+        Button pauseButton = findViewById(R.id.pauseButton);
+        TextView statusText = findViewById(R.id.statusTextView);
+        TextView metaText = findViewById(R.id.metaTextView);
+    }
 
 
     /* Authorization */
@@ -112,6 +145,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
                 // Auth flow returned an error
                 case ERROR:
+//                    onAuthenticationComplete(response);                                                                        //TODO TAKE THIS LINE OUT WHEN AUTH TOKEN IS DYNAMIC
                     log("Auth error: " + response.getError());
                     break;
 
@@ -127,6 +161,8 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         log("Got authentication token");
         if (player == null) {
             Config playerConfig = new Config(getApplicationContext(), authResponse.getAccessToken(), CLIENT_ID);
+//            Config playerConfig = new Config(getApplicationContext(), AUTH, CLIENT_ID);                                      //TODO Take out static Auth token
+
             // Since the Player is a static singleton owned by the Spotify class, we pass "this" as
             // the second argument in order to refcount it properly. Note that the method
             // Spotify.destroyPlayer() also takes an Object argument, which must be the same as the
