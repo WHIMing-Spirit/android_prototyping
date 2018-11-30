@@ -1,5 +1,6 @@
 package com.example.colecofer.spotify_play_song;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,9 +24,10 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+
+
 public class LocalSpotifyPlayer extends AppCompatActivity implements Player.NotificationCallback, ConnectionStateCallback {
-
-
+    
     //Client Constants
     private static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54"; //TODO change this to our client_id
     private static final String REDIRECT_URI = "testschema://callback";         //TODO also change this
