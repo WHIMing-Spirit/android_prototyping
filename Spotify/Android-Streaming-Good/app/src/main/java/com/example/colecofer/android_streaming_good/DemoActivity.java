@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.media.VolumeShaper;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -42,6 +43,10 @@ import java.net.URL;
 
 
 public class DemoActivity extends AppCompatActivity implements Player.NotificationCallback, ConnectionStateCallback {
+
+//    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+
 
     //** Temp **//
 //    private static final String AUTH = "Bearer BQA-AzWRkAGpzx2YvvxG0YD1_r-S7lZDx7vfXANqw90LCSo_4ETStmuCouLcueIUQiC75dWuKspsuj8zYFpedB4behZVCvZ90e8WoOLYU5oNLtdWEd-pwTNcWdxs9MabAlkPY9sVW94hRfWk2XmgNGgWoXR7OCa8a2QsqH9MDkMnZWJvUP4saI-mNBinBj_-DPLPNPmNQ1GF1X-EW0tWIqfPJafxIml3ifhTKsCjDLxyaPMVpDDlb65-YUHesj3KhblQb8I_2_yZSVCPjvw";
@@ -108,11 +113,11 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         if (metadata != null) {
 
             if (metadata.currentTrack != null) {
-                TextView statusText = findViewById(R.id.statusTextView);
-                TextView metaText = findViewById(R.id.metaTextView);
+                TextView albumText = findViewById(R.id.albumNameTextView);
+                TextView artistNameText = findViewById(R.id.artistNameTextView);
 
-                statusText.setText("Artist: " + metadata.currentTrack.artistName);
-                metaText.setText("Albym: " + metadata.currentTrack.albumName);
+                albumText.setText("Artist: " + metadata.currentTrack.artistName);
+                artistNameText.setText("Album: " + metadata.currentTrack.albumName);
 
             } else {
                 log("Error: meta data is null or there is no current track ");
@@ -140,6 +145,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                 player.playUri(OperationCallback, HYP_TRACK_URI, 0, 0);
                 currentPlaybackState = player.getPlaybackState();
                 updateView();
+                setCoverArt();
             }
         });
 
@@ -152,8 +158,6 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                     log("Playback has been paused");
                     setButtonText(R.id.pauseButton, "Resume");
                     player.pause(OperationCallback);
-                    setCoverArt();
-
                 } else {
                     log("Playback has been resumed");
                     setButtonText(R.id.pauseButton, "Pause");
@@ -163,30 +167,44 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
             }
         });
 
-        TextView statusText = findViewById(R.id.statusTextView);
-        TextView metaText = findViewById(R.id.metaTextView);
+        TextView albumText = findViewById(R.id.albumNameTextView);
+        TextView artistNameText = findViewById(R.id.artistNameTextView);
     }
 
 
     private void setCoverArt() {
-//        currentPlaybackState = player.getPlaybackState();
-        log("album: " + metadata.currentTrack.albumCoverWebUrl);
 
-        try {
-            ImageView i = findViewById(R.id.albumArtImageView);
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(metadata.currentTrack.albumCoverWebUrl).getContent());
-            i.setImageBitmap(bitmap);
-            log("Image loading was successfull I think....");
-        } catch (MalformedURLException e) {
-            log("Error loading cover art: MalformedURLException");
-            e.printStackTrace();
-        } catch (IOException e) {
-            log("Error loading cover art: IOExcetion");
-            e.printStackTrace();
-        }
+        Thread thread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
 
-//        Image albumArt = new Image();
-//        albumArtImageView.setImageResource(R.drawable.);
+                    log("album: " + metadata.currentTrack.albumCoverWebUrl);
+
+                    try {
+                        ImageView i = findViewById(R.id.albumArtImageView);
+                        Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(metadata.currentTrack.albumCoverWebUrl).getContent());
+                        i.setImageBitmap(bitmap);
+                        log("Image loading was successfull I think....");
+                    } catch (MalformedURLException e) {
+                        log("Error loading cover art: MalformedURLException");
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        log("Error loading cover art: IOExcetion");
+                        e.printStackTrace();
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+
+
+
 
     }
 
