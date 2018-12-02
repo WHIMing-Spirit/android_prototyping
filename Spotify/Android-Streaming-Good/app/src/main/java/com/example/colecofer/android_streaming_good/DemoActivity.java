@@ -44,39 +44,35 @@ import java.net.URL;
 
 public class DemoActivity extends AppCompatActivity implements Player.NotificationCallback, ConnectionStateCallback {
 
-//    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-
-
     //** Temp **//
-//    private static final String AUTH = "Bearer BQA-AzWRkAGpzx2YvvxG0YD1_r-S7lZDx7vfXANqw90LCSo_4ETStmuCouLcueIUQiC75dWuKspsuj8zYFpedB4behZVCvZ90e8WoOLYU5oNLtdWEd-pwTNcWdxs9MabAlkPY9sVW94hRfWk2XmgNGgWoXR7OCa8a2QsqH9MDkMnZWJvUP4saI-mNBinBj_-DPLPNPmNQ1GF1X-EW0tWIqfPJafxIml3ifhTKsCjDLxyaPMVpDDlb65-YUHesj3KhblQb8I_2_yZSVCPjvw";
+    //private static final String AUTH = "Bearer BQA-AzWRkAGpzx2YvvxG0YD1_r-S7lZDx7vfXANqw90LCSo_4ETStmuCouLcueIUQiC75dWuKspsuj8zYFpedB4behZVCvZ90e8WoOLYU5oNLtdWEd-pwTNcWdxs9MabAlkPY9sVW94hRfWk2XmgNGgWoXR7OCa8a2QsqH9MDkMnZWJvUP4saI-mNBinBj_-DPLPNPmNQ1GF1X-EW0tWIqfPJafxIml3ifhTKsCjDLxyaPMVpDDlb65-YUHesj3KhblQb8I_2_yZSVCPjvw";
 
 
     //Client Constants
-//    private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8";  //Cole's personal client
-//    private static final String REDIRECT_URI = "whimvisualizer://callback ";       //Cole's personal redirect uri
+    //private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8";     //Cole's personal client
+    //zprivate static final String REDIRECT_URI = "whimvisualizer://callback ";       //Cole's personal redirect uri
 
-    private static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";    //Spotifys test
-    private static final String REDIRECT_URI = "testschema://callback";      //Spotifys test
+    private static final String CLIENT_ID    = "089d841ccc194c10a77afad9e1c11d54";       //Spotifys test
+    private static final String REDIRECT_URI = "testschema://callback";                  //Spotifys test
 
 
     private static final String[] SCOPES = new String[] {"user-read-private", "playlist-read", "playlist-read-private", "streaming"};
 
     //Test Constants
-    private static final String TEST_SONG_URI = "spotify:track:6KywfgRqvgvfJc3JRwaZdZ";
-    private static final String HYP_TRACK_URI = "spotify:track:7KwZNVEaqikRSBSpyhXK2j";
-    private static final String TEST_ALBUM_URI = "spotify:album:2lYmxilk8cXJlxxXmns1IU";
-    private static final String TEST_PLAYLIST_URI = "spotify:user:spotify:playlist:2yLXxKhhziG2xzy7eyD4TD";
+    private static final String TEST_SONG_URI       = "spotify:track:6KywfgRqvgvfJc3JRwaZdZ";
+    private static final String HYP_TRACK_URI       = "spotify:track:7KwZNVEaqikRSBSpyhXK2j";
+    private static final String TEST_ALBUM_URI      = "spotify:album:2lYmxilk8cXJlxxXmns1IU";
+    private static final String TEST_PLAYLIST_URI   = "spotify:user:spotify:playlist:2yLXxKhhziG2xzy7eyD4TD";
     private static final String TEST_QUEUE_SONG_URI = "spotify:track:5EEOjaJyWvfMglmEwf9bG3";
 
     private static final int REQUEST_CODE = 1337;              //I have no idea what this is
-    public static final String TAG = "Spotify";  //Logging tag
+    public static final String TAG        = "Spotify";                //Logging tag
 
     private SpotifyPlayer player;                              //MUST be destroyed by calling SpotifyDestroyPlayer(Object) to avoid mem leaks
     private PlaybackState currentPlaybackState;
     private BroadcastReceiver networkStateReceiver;            //Used to get notifications from the system about the network state (need to set ACCESS_NETWORK_STATE permission
 
-    private Metadata metadata;                                //Holds Spotify metadata about tracks and stuff
+    private Metadata metadata;                                 //Holds Spotify metadata about tracks and stuff
 
     private final Player.OperationCallback OperationCallback = new Player.OperationCallback() {
         @Override
@@ -95,8 +91,6 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
-
-
         loginToSpotify();
     }
 
@@ -108,10 +102,8 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
 
     public void updateView() {
-//        boolean loggedIn = isLoggedIn();
 
         if (metadata != null) {
-
             if (metadata.currentTrack != null) {
                 TextView albumText = findViewById(R.id.albumNameTextView);
                 TextView artistNameText = findViewById(R.id.artistNameTextView);
@@ -120,7 +112,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                 artistNameText.setText("Album: " + metadata.currentTrack.albumName);
 
             } else {
-                log("Error: meta data is null or there is no current track ");
+                log("Error: There is no currently playing song");
             }
 
         }
@@ -225,6 +217,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -248,6 +241,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
             }
         }
     }
+
 
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
         log("Got authentication token");
