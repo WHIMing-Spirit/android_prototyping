@@ -39,9 +39,13 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
 
     //Client Constants
-    private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8"; //TODO change this to our client_id
-//    private static final String REDIRECT_URI = "testschema://callback";         //TODO also change this
-    private static final String REDIRECT_URI = "WHIM-Visualizer-app-login://callback ";
+//    private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8";  //Cole's personal client
+//    private static final String REDIRECT_URI = "whimvisualizer://callback ";       //Cole's personal redirect uri
+
+    private static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";    //Spotifys test
+    private static final String REDIRECT_URI = "testschema://callback";      //Spotifys test
+
+
     private static final String[] SCOPES = new String[] {"user-read-private", "playlist-read", "playlist-read-private", "streaming"};
 
     //Test Constants
@@ -68,7 +72,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
         @Override
         public void onError(Error error) {
-            log("Callback: ERROR:" + error);
+            log("Callback ERROR:" + error);
         }
     };
 
@@ -142,10 +146,8 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                 case TOKEN:
                     onAuthenticationComplete(response);
                     break;
-
                 // Auth flow returned an error
                 case ERROR:
-//                    onAuthenticationComplete(response);                                                                        //TODO TAKE THIS LINE OUT WHEN AUTH TOKEN IS DYNAMIC
                     log("Auth error: " + response.getError());
                     break;
 
@@ -157,26 +159,19 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     }
 
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
-        // Once we have obtained an authorization token, we can proceed with creating a Player.
         log("Got authentication token");
         if (player == null) {
             Config playerConfig = new Config(getApplicationContext(), authResponse.getAccessToken(), CLIENT_ID);
-//            Config playerConfig = new Config(getApplicationContext(), AUTH, CLIENT_ID);                                      //TODO Take out static Auth token
-
-            // Since the Player is a static singleton owned by the Spotify class, we pass "this" as
-            // the second argument in order to refcount it properly. Note that the method
-            // Spotify.destroyPlayer() also takes an Object argument, which must be the same as the
-            // one passed in here. If you pass different instances to Spotify.getPlayer() and
-            // Spotify.destroyPlayer(), that will definitely result in resource leaks.
             player = Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+
                 @Override
                 public void onInitialized(SpotifyPlayer player) {
-                    log("-- Player initialized --");
+                    log("Player has been initialized");
                     player.setConnectivityStatus(OperationCallback, getNetworkConnectivity(DemoActivity.this));
                     player.addNotificationCallback(DemoActivity.this);
                     player.addConnectionStateCallback(DemoActivity.this);
-                    // Trigger UI refresh
-                    updateView();
+
+                    updateView(); //TODO: This may not be necessary (?)
                 }
 
                 @Override
@@ -210,7 +205,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
 
 
-    /* Overridden methods */
+    /* Overridden methods for debugging */
 
     @Override
     public void onLoggedIn() {
