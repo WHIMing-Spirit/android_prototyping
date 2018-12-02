@@ -168,7 +168,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
             public void run() {
                 try {
 
-                    log("album: " + metadata.currentTrack.albumCoverWebUrl);  //Hello
+                    log("album: " + metadata.currentTrack.albumCoverWebUrl);  
 
                     try {
                         ImageView i = findViewById(R.id.albumArtImageView);
