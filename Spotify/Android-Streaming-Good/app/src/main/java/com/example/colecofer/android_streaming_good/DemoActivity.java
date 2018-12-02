@@ -66,7 +66,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     private static final String TEST_QUEUE_SONG_URI = "spotify:track:5EEOjaJyWvfMglmEwf9bG3";
 
     private static final int REQUEST_CODE = 1337;              //I have no idea what this is
-    public static final String TAG        = "Spotify";                //Logging tag
+    public static final String TAG        = "Spotify";         //Logging tag
 
     private SpotifyPlayer player;                              //MUST be destroyed by calling SpotifyDestroyPlayer(Object) to avoid mem leaks
     private PlaybackState currentPlaybackState;
@@ -158,20 +158,17 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
             }
         });
-
-        TextView albumText = findViewById(R.id.albumNameTextView);
-        TextView artistNameText = findViewById(R.id.artistNameTextView);
     }
 
 
     private void setCoverArt() {
 
-        Thread thread = new Thread(new Runnable(){
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
 
-                    log("album: " + metadata.currentTrack.albumCoverWebUrl);
+                    log("album: " + metadata.currentTrack.albumCoverWebUrl);  //Hello
 
                     try {
                         ImageView i = findViewById(R.id.albumArtImageView);
@@ -186,7 +183,6 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                         e.printStackTrace();
                     }
 
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -194,10 +190,6 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         });
 
         thread.start();
-
-
-
-
     }
 
     /**
