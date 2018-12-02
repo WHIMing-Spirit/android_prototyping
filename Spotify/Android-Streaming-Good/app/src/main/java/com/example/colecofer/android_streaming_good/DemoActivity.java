@@ -1,5 +1,8 @@
 package com.example.colecofer.android_streaming_good;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.media.VolumeShaper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.player.Config;
@@ -30,6 +34,11 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class DemoActivity extends AppCompatActivity implements Player.NotificationCallback, ConnectionStateCallback {
@@ -98,14 +107,18 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
         if (metadata != null) {
 
+            if (metadata.currentTrack != null) {
+                TextView statusText = findViewById(R.id.statusTextView);
+                TextView metaText = findViewById(R.id.metaTextView);
 
-//            if (player.getPlaybackState().isPlaying) {
-//                setButtonText(R.id.pauseButton, "Pause");
-//            }
+                statusText.setText("Artist: " + metadata.currentTrack.artistName);
+                metaText.setText("Albym: " + metadata.currentTrack.albumName);
 
-//            findViewById(R.id.pauseButton).setEnabled(metadata.currentTrack != null);
+            } else {
+                log("Error: meta data is null or there is no current track ");
+            }
+
         }
-
     }
 
 
@@ -125,6 +138,8 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                     setButtonText(R.id.pauseButton, "Pause");
                 }
                 player.playUri(OperationCallback, HYP_TRACK_URI, 0, 0);
+                currentPlaybackState = player.getPlaybackState();
+                updateView();
             }
         });
 
@@ -137,6 +152,8 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                     log("Playback has been paused");
                     setButtonText(R.id.pauseButton, "Resume");
                     player.pause(OperationCallback);
+                    setCoverArt();
+
                 } else {
                     log("Playback has been resumed");
                     setButtonText(R.id.pauseButton, "Pause");
@@ -150,6 +167,28 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         TextView metaText = findViewById(R.id.metaTextView);
     }
 
+
+    private void setCoverArt() {
+//        currentPlaybackState = player.getPlaybackState();
+        log("album: " + metadata.currentTrack.albumCoverWebUrl);
+
+        try {
+            ImageView i = findViewById(R.id.albumArtImageView);
+            Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(metadata.currentTrack.albumCoverWebUrl).getContent());
+            i.setImageBitmap(bitmap);
+            log("Image loading was successfull I think....");
+        } catch (MalformedURLException e) {
+            log("Error loading cover art: MalformedURLException");
+            e.printStackTrace();
+        } catch (IOException e) {
+            log("Error loading cover art: IOExcetion");
+            e.printStackTrace();
+        }
+
+//        Image albumArt = new Image();
+//        albumArtImageView.setImageResource(R.drawable.);
+
+    }
 
     /**
      * Sets the text for a button
@@ -238,6 +277,17 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     }
 
 
+    @Override
+    public void onPlaybackEvent(PlayerEvent event) {
+        //log("Event: " + event);
+        currentPlaybackState = player.getPlaybackState();
+        metadata = player.getMetadata();
+        //Log.i(TAG, "Player state: " + currentPlaybackState);
+        //Log.i(TAG, "Metadata: " + metadata);
+        updateView();
+    }
+
+
 
     /* Overridden methods for debugging */
 
@@ -266,10 +316,6 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         log("On connection message: " + s);
     }
 
-    @Override
-    public void onPlaybackEvent(PlayerEvent playerEvent) {
-        log("onPlaybackEven happened");
-    }
 
     @Override
     public void onPlaybackError(Error error) {
