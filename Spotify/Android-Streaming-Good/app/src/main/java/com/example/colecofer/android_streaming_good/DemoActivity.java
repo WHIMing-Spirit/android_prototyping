@@ -94,11 +94,16 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
 
     public void updateView() {
-        boolean loggedIn = isLoggedIn();
+//        boolean loggedIn = isLoggedIn();
 
         if (metadata != null) {
-            findViewById(R.id.pauseButton).setEnabled(metadata.currentTrack != null);
 
+
+//            if (player.getPlaybackState().isPlaying) {
+//                setButtonText(R.id.pauseButton, "Pause");
+//            }
+
+//            findViewById(R.id.pauseButton).setEnabled(metadata.currentTrack != null);
         }
 
     }
@@ -110,21 +115,50 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
 
     public void initUI() {
-        //Get references to UI elements
+
         Button playButton = findViewById(R.id.playButton);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 log("Starting plaback for " + HYP_TRACK_URI);
+                if (!player.getPlaybackState().isPlaying) {
+                    setButtonText(R.id.pauseButton, "Pause");
+                }
                 player.playUri(OperationCallback, HYP_TRACK_URI, 0, 0);
             }
         });
 
         Button pauseButton = findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentPlaybackState = player.getPlaybackState();
+                if (currentPlaybackState != null && currentPlaybackState.isPlaying) {
+                    log("Playback has been paused");
+                    setButtonText(R.id.pauseButton, "Resume");
+                    player.pause(OperationCallback);
+                } else {
+                    log("Playback has been resumed");
+                    setButtonText(R.id.pauseButton, "Pause");
+                    player.resume(OperationCallback);
+                }
+
+            }
+        });
+
         TextView statusText = findViewById(R.id.statusTextView);
         TextView metaText = findViewById(R.id.metaTextView);
     }
 
+
+    /**
+     * Sets the text for a button
+     * @param id The id of the button (e.g. R.id.pauseButton)
+     * @param text The updated text
+     */
+    private void setButtonText(int id, String text) {
+        ((Button) findViewById(id)).setText(text);
+    }
 
     /* Authorization */
     private void openLoginWindow() {
