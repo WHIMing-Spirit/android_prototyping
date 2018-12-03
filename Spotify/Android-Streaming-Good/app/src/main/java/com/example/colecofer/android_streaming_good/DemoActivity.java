@@ -18,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,18 +46,16 @@ import java.net.URL;
 
 public class DemoActivity extends AppCompatActivity implements Player.NotificationCallback, ConnectionStateCallback {
 
-    //** Temp **//
-    //private static final String AUTH = "Bearer BQA-AzWRkAGpzx2YvvxG0YD1_r-S7lZDx7vfXANqw90LCSo_4ETStmuCouLcueIUQiC75dWuKspsuj8zYFpedB4behZVCvZ90e8WoOLYU5oNLtdWEd-pwTNcWdxs9MabAlkPY9sVW94hRfWk2XmgNGgWoXR7OCa8a2QsqH9MDkMnZWJvUP4saI-mNBinBj_-DPLPNPmNQ1GF1X-EW0tWIqfPJafxIml3ifhTKsCjDLxyaPMVpDDlb65-YUHesj3KhblQb8I_2_yZSVCPjvw";
 
+    //TODO: Authenticate with the new Spotify account (first need to create a new client_id / secret)
+    //private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8";     //Cole's personal client
+    //private static final String REDIRECT_URI = "whimvisualizer://callback ";       //Cole's personal redirect uri
 
     //Client Constants
-    //private static final String CLIENT_ID = "5f0eac9db12042cfa8b9fb95b0f3f4d8";     //Cole's personal client
-    //zprivate static final String REDIRECT_URI = "whimvisualizer://callback ";       //Cole's personal redirect uri
-
     private static final String CLIENT_ID    = "089d841ccc194c10a77afad9e1c11d54";       //Spotifys test
     private static final String REDIRECT_URI = "testschema://callback";                  //Spotifys test
 
-
+    //Authentication access scopes
     private static final String[] SCOPES = new String[] {"user-read-private", "playlist-read", "playlist-read-private", "streaming"};
 
     //Test Constants
@@ -65,19 +65,23 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     private static final String TEST_PLAYLIST_URI   = "spotify:user:spotify:playlist:2yLXxKhhziG2xzy7eyD4TD";
     private static final String TEST_QUEUE_SONG_URI = "spotify:track:5EEOjaJyWvfMglmEwf9bG3";
 
-    private static final int REQUEST_CODE = 1337;              //I have no idea what this is
-    public static final String TAG        = "Spotify";         //Logging tag
+    //TODO: Find out what a request_code is...
+    private static final int REQUEST_CODE = 1337;              //I think it has to do with verification of which Activity authentication happens at
 
-    private SpotifyPlayer player;                              //MUST be destroyed by calling SpotifyDestroyPlayer(Object) to avoid mem leaks
-    private PlaybackState currentPlaybackState;
-    private BroadcastReceiver networkStateReceiver;            //Used to get notifications from the system about the network state (need to set ACCESS_NETWORK_STATE permission
+    public static final String TAG        = "Spotify";         //Logcat Tag
+
+    private SpotifyPlayer player;                              //Spotify player that controls the background service
+    private PlaybackState currentPlaybackState;                //The current state of the player (e.g. is it playing music or not?)
+    private BroadcastReceiver networkStateReceiver;            //Used to get notifications from the system about the network state (need to set ACCESS_NETWORK_STATE permission)
 
     private Metadata metadata;                                 //Holds Spotify metadata about tracks and stuff
 
+
+    //Callback functions for playback events
     private final Player.OperationCallback OperationCallback = new Player.OperationCallback() {
         @Override
         public void onSuccess() {
-            log("Callback: OK!");
+            log("Callback: Success!");
         }
 
         @Override
@@ -95,12 +99,19 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     }
 
 
+    /**
+     * Starts the authentication process by redirecting the user into
+     * their browser to log into Spotify.
+     */
     public void loginToSpotify() {
         initUI();
         openLoginWindow();
     }
 
 
+    /**
+     * Should be invoked when visible information changes within the view.
+     */
     public void updateView() {
 
         if (metadata != null) {
@@ -110,22 +121,29 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
                 albumText.setText("Artist: " + metadata.currentTrack.artistName);
                 artistNameText.setText("Album: " + metadata.currentTrack.albumName);
-
             } else {
-                log("Error: There is no currently playing song");
+                log("There is no track playing currently (This is only an error if you expected it to be playing)");
             }
 
         }
     }
 
 
+    /**
+     * Check if there is a user logged into the player
+     * @return True if there is someone logged in.
+     */
     public boolean isLoggedIn() {
         return player != null && player.isLoggedIn();
     }
 
 
+    /**
+     * Initialize the user interface including listeners.
+     */
     public void initUI() {
 
+        //Play button
         Button playButton = findViewById(R.id.playButton);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,6 +159,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
             }
         });
 
+        //Pause / Resume button
         Button pauseButton = findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,11 +177,25 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
             }
         });
+
+
+        //Search Image Button
+        ImageButton searchButton = findViewById(R.id.searchButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentPlaybackState = player.getPlaybackState();
+                EditText trackEditText = findViewById(R.id.trackEditText);
+                String trackString = trackEditText.getText().toString();
+                
+            }
+        });
+
     }
 
 
     //TODO: Update to ASYNC task
-    //TODO: Invoke setting album art
+    //TODO: Invoke setting album art when finished
     private void setCoverArt() {
 
         Thread thread = new Thread(new Runnable() {
@@ -194,6 +227,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         thread.start();
     }
 
+
     /**
      * Sets the text for a button
      * @param id The id of the button (e.g. R.id.pauseButton)
@@ -203,7 +237,10 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         ((Button) findViewById(id)).setText(text);
     }
 
-    /* Authorization */
+
+    /**
+     * Redirects the user to the Spotify login page in their local browser
+     */
     private void openLoginWindow() {
         final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
                 .setScopes(SCOPES)
@@ -216,9 +253,9 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
@@ -236,7 +273,10 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         }
     }
 
-
+    /**
+     * Authentication was successful, and the player can be initialized
+     * @param authResponse
+     */
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
         log("Got authentication token");
         if (player == null) {
@@ -283,6 +323,10 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     }
 
 
+    /**
+     * Is invoked when ever a playback event occurs (e.g. play / pause)
+     * @param event
+     */
     @Override
     public void onPlaybackEvent(PlayerEvent event) {
         //log("Event: " + event);
@@ -295,7 +339,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
 
 
 
-    /* Overridden methods for debugging */
+    /* Overridden flow methods */
 
     @Override
     public void onLoggedIn() {
@@ -337,5 +381,17 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
         Log.d(TAG, message);
     }
 
+
+    /**
+     * *** ULTRA-IMPORTANT ***
+     * ALWAYS call this in your onDestroy() method, otherwise you will leak native resources!
+     * This is an unfortunate necessity due to the different memory management models of
+     * Java's garbage collector and C++ RAII.
+     */
+    @Override
+    protected void onDestroy() {
+        Spotify.destroyPlayer(this);
+        super.onDestroy();
+    }
 
 }
