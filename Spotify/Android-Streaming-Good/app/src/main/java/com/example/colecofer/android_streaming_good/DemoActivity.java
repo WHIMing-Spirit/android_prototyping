@@ -161,6 +161,8 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     }
 
 
+    //TODO: Update to ASYNC task
+    //TODO: Invoke setting album art
     private void setCoverArt() {
 
         Thread thread = new Thread(new Runnable() {
@@ -168,7 +170,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
             public void run() {
                 try {
 
-                    log("album: " + metadata.currentTrack.albumCoverWebUrl);  
+                    log("album: " + metadata.currentTrack.albumCoverWebUrl);
 
                     try {
                         ImageView i = findViewById(R.id.albumArtImageView);

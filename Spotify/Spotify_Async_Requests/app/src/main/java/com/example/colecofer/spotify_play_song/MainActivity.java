@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -23,12 +25,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        LocalSpotifyPlayer spotifyPlayer = new LocalSpotifyPlayer();
-        spotifyPlayer.onCreate();
+//        LocalSpotifyPlayer spotifyPlayer = new LocalSpotifyPlayer();
+//        spotifyPlayer.onCreate();
+
+
 
 
 //        testSpotifyAPI();
-//        testMusixmatch();
+        testMusixmatch();
     }
 
     public void testMusixmatch() {
@@ -38,8 +42,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void MusixmatchResponse(boolean success, String response) {
                 try {
+
                     String json = SpotifyRequest.convertStringToJSON(response).getJSONObject("message").getJSONObject("body").getJSONObject("lyrics").getString("lyrics_body");
+
                     Log.d("Musixmatch", "After conversion: " + json);
+                    animateText(json);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -47,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    public void animateText(String text) {
+        TextView tv = findViewById(R.id.animationTextView);
+        Animation translatebu= AnimationUtils.loadAnimation(this, R.anim.scollinganimationfile);
+        tv.setText(text);
+        tv.startAnimation(translatebu);
+    }
 
     public void testSpotifyAPI() {
         final SpotifyRequest request = new SpotifyRequest();
