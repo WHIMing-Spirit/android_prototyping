@@ -25,13 +25,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-//        LocalSpotifyPlayer spotifyPlayer = new LocalSpotifyPlayer();
-//        spotifyPlayer.onCreate();
-
-
-
-
-//        testSpotifyAPI();
+        //LocalSpotifyPlayer spotifyPlayer = new LocalSpotifyPlayer();
+        //SotifyPlayer.onCreate();
+        //testSpotifyAPI();
         testMusixmatch();
     }
 

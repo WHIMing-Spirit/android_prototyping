@@ -59,6 +59,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     private static final String[] SCOPES = new String[] {"user-read-private", "playlist-read", "playlist-read-private", "streaming"};
 
     //Test Constants
+    private static final String TRACK_BASE_URI      = "spotify:track:";
     private static final String TEST_SONG_URI       = "spotify:track:6KywfgRqvgvfJc3JRwaZdZ";
     private static final String HYP_TRACK_URI       = "spotify:track:7KwZNVEaqikRSBSpyhXK2j";
     private static final String TEST_ALBUM_URI      = "spotify:album:2lYmxilk8cXJlxxXmns1IU";
@@ -95,6 +96,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
+
         loginToSpotify();
     }
 
@@ -113,7 +115,6 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
      * Should be invoked when visible information changes within the view.
      */
     public void updateView() {
-
         if (metadata != null) {
             if (metadata.currentTrack != null) {
                 TextView albumText = findViewById(R.id.albumNameTextView);
@@ -187,7 +188,15 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                 currentPlaybackState = player.getPlaybackState();
                 EditText trackEditText = findViewById(R.id.trackEditText);
                 String trackString = trackEditText.getText().toString();
-                
+
+                //TODO: Most likely will need to use the Spotify WEB API to retrieve album art and meta data since
+                //TODO: you can only retrieve that information if a song is currently playing ...
+                player.playUri(OperationCallback, TRACK_BASE_URI + trackString, 0, 0);
+                player.pause(OperationCallback);
+
+                updateView();
+                setCoverArt();
+
             }
         });
 
