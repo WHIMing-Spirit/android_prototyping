@@ -16,6 +16,9 @@ public class SpotifyRequest {
     private final String FEATURES_URL = "/audio-features/";
     private final String SEARCH_URL = "/search/";
     private final String PLAYER_URL = "/me/player/";
+    private final String ARTIST_URL = "/artists/";
+    private final String ALBUM_URL = "";
+    private final String COVER_ART_URL = "";
     private final String AUTH_URL = "https://accounts.spotify.com/api/token";
 
     //WHIM Credentials
@@ -58,6 +61,43 @@ public class SpotifyRequest {
         });
     }
 
+
+    /**
+     * Provides the artist name given the Spotify ID
+     * @param trackID The Spotify / Track ID
+     * @param authToken The authentication token
+     * @param callback Callback function to be implemented
+     */
+    public void getArtistName(String trackID, String authToken, final SpotifyRequestCallBack callback) {
+        String fullArtistURL = BASE_URL + ARTIST_URL + trackID;
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.addHeader("Authorization", authToken);
+
+        client.get(fullArtistURL, new TextHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                callback.spotifyResponse(true, responseString);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                callback.spotifyResponse(false, responseString);
+            }
+
+        });
+    }
+
+    public void getAlbumName() {
+
+    }
+
+    public void getCoverArt() {
+
+    }
 
     /**
      * Calls the Spotify features API end-point for the passed in trackID.

@@ -76,6 +76,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
     private BroadcastReceiver networkStateReceiver;            //Used to get notifications from the system about the network state (need to set ACCESS_NETWORK_STATE permission)
 
     private Metadata metadata;                                 //Holds Spotify metadata about tracks and stuff
+    private String authToken;
 
 
     //Callback functions for playback events
@@ -115,18 +116,18 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
      * Should be invoked when visible information changes within the view.
      */
     public void updateView() {
-        if (metadata != null) {
-            if (metadata.currentTrack != null) {
-                TextView albumText = findViewById(R.id.albumNameTextView);
-                TextView artistNameText = findViewById(R.id.artistNameTextView);
-
-                albumText.setText("Artist: " + metadata.currentTrack.artistName);
-                artistNameText.setText("Album: " + metadata.currentTrack.albumName);
-            } else {
-                log("There is no track playing currently (This is only an error if you expected it to be playing)");
-            }
-
-        }
+//        if (metadata != null) {
+//            if (metadata.currentTrack != null) {
+//                TextView albumText = findViewById(R.id.albumNameTextView);
+//                TextView artistNameText = findViewById(R.id.artistNameTextView);
+//
+//                albumText.setText("Artist: " + metadata.currentTrack.artistName);
+//                artistNameText.setText("Album: " + metadata.currentTrack.albumName);
+//            } else {
+//                log("There is no track playing currently (This is only an error if you expected it to be playing)");
+//            }
+//
+//        }
     }
 
 
@@ -153,7 +154,21 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                 if (!player.getPlaybackState().isPlaying) {
                     setButtonText(R.id.pauseButton, "Pause");
                 }
-                player.playUri(OperationCallback, HYP_TRACK_URI, 0, 0);
+
+                EditText trackEditText = findViewById(R.id.trackEditText);
+                String trackString = trackEditText.getText().toString();
+
+                //Make sure the user has logged into the player before starting the song
+                //This mitigates the failures when trying to play a song before it's ready
+                if (isLoggedIn()) {
+                    player.playUri(OperationCallback, TRACK_BASE_URI + trackString, 0, 0);
+                } else {
+                    log("Error: User has not been ");
+                }
+
+                log("URI: " + TRACK_BASE_URI + trackString);
+
+                //player.playUri(OperationCallback, HYP_TRACK_URI, 0, 0);
                 currentPlaybackState = player.getPlaybackState();
                 updateView();
                 setCoverArt();
@@ -189,10 +204,17 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
                 EditText trackEditText = findViewById(R.id.trackEditText);
                 String trackString = trackEditText.getText().toString();
 
-                //TODO: Most likely will need to use the Spotify WEB API to retrieve album art and meta data since
-                //TODO: you can only retrieve that information if a song is currently playing ...
-                player.playUri(OperationCallback, TRACK_BASE_URI + trackString, 0, 0);
-                player.pause(OperationCallback);
+                SpotifyRequest request = new SpotifyRequest();
+
+                log("Log in artist: " + authToken);
+
+                request.getArtistName(trackString, authToken, new SpotifyRequestCallBack() {
+                    @Override
+                    public void spotifyResponse(boolean success, String response) {
+                        log("Get Artist Name status: " + success);
+                        log("Response: " + response);
+                    }
+                });
 
                 updateView();
                 setCoverArt();
@@ -288,6 +310,7 @@ public class DemoActivity extends AppCompatActivity implements Player.Notificati
      */
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
         log("Got authentication token");
+        authToken = "Bearer " + authResponse.getAccessToken();
         if (player == null) {
             Config playerConfig = new Config(getApplicationContext(), authResponse.getAccessToken(), CLIENT_ID);
             player = Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {

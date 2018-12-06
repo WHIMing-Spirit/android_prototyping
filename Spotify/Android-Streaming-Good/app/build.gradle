@@ -35,9 +35,9 @@ dependencies {
     //HTTP
     implementation 'com.loopj.android:android-async-http:1.4.9' //Added for HTTP Requests
 
-//    implementation 'com.spotify.sdk:spotifys-player-24-noconnect-2.20b@aar'
-//    implementation 'com.spotify.sdk:spotify-auth-release-1.1.0@aar'
-//    implementation 'com.spotify.android:auth:1.1.0'
+    //implementation 'com.spotify.sdk:spotifys-player-24-noconnect-2.20b@aar'
+    //implementation 'com.spotify.sdk:spotify-auth-release-1.1.0@aar'
+    //implementation 'com.spotify.android:auth:1.1.0'
 
 
 }

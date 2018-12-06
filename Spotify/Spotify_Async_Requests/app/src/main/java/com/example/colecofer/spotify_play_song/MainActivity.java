@@ -54,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void animateText(String text) {
         TextView tv = findViewById(R.id.animationTextView);
-        Animation translatebu= AnimationUtils.loadAnimation(this, R.anim.scollinganimationfile);
+        Animation translatebu = AnimationUtils.loadAnimation(this, R.anim.scollinganimationfile);
         tv.setText(text);
         tv.startAnimation(translatebu);
     }
 
     public void testSpotifyAPI() {
         final SpotifyRequest request = new SpotifyRequest();
-        String authScopes = "user-read-playback-state user-modify-playback-state";
+        String authScopes = "user-read-playback-sta/* */te user-modify-playback-state";
 
         //Get the auth token given the scope
         request.getAuthToken(authScopes, new SpotifyRequestCallBack() {
